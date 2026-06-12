@@ -525,7 +525,12 @@
     const logros = getChecked('logros');
     const desafios = getChecked('desafios');
     const comentario = document.getElementById('comentario').value;
+    const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycby2K1daHli4NhJl_4hGN750RwlIz8o_mObl8eDDZK00w4Pzj7aHCYY9ckQ-Na8eNtP5/exec';
 
+fetch(URL_SCRIPT, {
+  method: 'POST',
+  body: JSON.stringify({ entrenador, fecha, jugadora, logros, desafios, comentario })
+});
     console.log('MIRADAS · Registro', { jugadora, entrenador, fecha, logros, desafios, comentario });
 
     // Mostrar éxito
