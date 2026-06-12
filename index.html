@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Miradas · ADF Hockey 6°B</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --verde: #1D9E75;
+    --verde-claro: #E1F5EE;
+    --verde-oscuro: #0F6E56;
+    --gris-texto: #2C2C2A;
+    --gris-suave: #F1EFE8;
+    --gris-borde: rgba(0,0,0,0.12);
+    --radio: 12px;
+    --radio-sm: 8px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f7f7f5;
+    color: var(--gris-texto);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+  }
+
+  .shell {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--verde);
+    padding: 28px 24px 24px;
+    color: #fff;
+  }
+
+  .header-marca {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 6px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .header p {
+    font-size: 13px;
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.25);
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #fff;
+    transition: width 0.35s ease;
+  }
+
+  /* PASOS */
+  .paso {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    padding: 28px 24px 24px;
+    gap: 20px;
+  }
+
+  .paso.activo {
+    display: flex;
+  }
+
+  .paso-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--verde);
+  }
+
+  .paso h2 {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--gris-texto);
+  }
+
+  .paso .subtitulo {
+    font-size: 14px;
+    color: #5F5E5A;
+    margin-top: -12px;
+    line-height: 1.5;
+  }
+
+  /* CAMPOS */
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .campo label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #444441;
+  }
+
+  .campo input,
+  .campo select,
+  .campo textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--gris-texto);
+    background: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .campo input:focus,
+  .campo select:focus,
+  .campo textarea:focus {
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+  }
+
+  .campo select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235F5E5A' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 38px;
+  }
+
+  .campo textarea {
+    resize: none;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  /* OPCIONES MULTIPLE CHOICE */
+  .opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .opcion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .opcion:active {
+    transform: scale(0.98);
+  }
+
+  .opcion input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--verde);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .opcion-texto {
+    font-size: 15px;
+    line-height: 1.3;
+    color: var(--gris-texto);
+    flex: 1;
+  }
+
+  .opcion.seleccionada {
+    border-color: var(--verde);
+    background: var(--verde-claro);
+  }
+
+  .opcion.seleccionada .opcion-texto {
+    color: var(--verde-oscuro);
+    font-weight: 500;
+  }
+
+  /* SEPARADOR DE GRUPO */
+  .grupo-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888780;
+    margin-top: 8px;
+    margin-bottom: 2px;
+    padding-left: 2px;
+  }
+
+  /* BOTÓN PRINCIPAL */
+  .btn-siguiente {
+    margin-top: auto;
+    padding: 15px 24px;
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    border-radius: var(--radio);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-siguiente:active {
+    background: var(--verde-oscuro);
+    transform: scale(0.98);
+  }
+
+  /* PANTALLA FINAL */
+  .pantalla-exito {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 40px 28px;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .pantalla-exito.activo {
+    display: flex;
+  }
+
+  .exito-icono {
+    width: 72px;
+    height: 72px;
+    background: var(--verde-claro);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  .exito-titulo {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--verde-oscuro);
+    line-height: 1.3;
+  }
+
+  .exito-subtitulo {
+    font-size: 15px;
+    color: #5F5E5A;
+    line-height: 1.6;
+    max-width: 300px;
+  }
+
+  .exito-firma {
+    font-size: 13px;
+    color: #888780;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .btn-reiniciar {
+    margin-top: 24px;
+    padding: 15px 24px;
+    background: #fff;
+    color: var(--verde-oscuro);
+    border: 1.5px solid var(--verde);
+    border-radius: var(--radio);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s;
+  }
+
+  .btn-reiniciar:active {
+    background: var(--verde-claro);
+  }
+
+  /* MARCA FOOTER */
+  .marca-footer {
+    text-align: center;
+    padding: 12px;
+    font-size: 11px;
+    color: #B4B2A9;
+    letter-spacing: 0.05em;
+    border-top: 1px solid var(--gris-borde);
+  }
+
+  .marca-footer strong {
+    color: var(--verde);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="header">
+    <div class="header-marca">Miradas · Sistema de seguimiento</div>
+    <h1>ADF Hockey 6°B</h1>
+    <p>Observaciones del último entrenamiento / partido</p>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progreso" style="width: 20%"></div>
+  </div>
+
+  <!-- PASO 1: Datos básicos -->
+  <div class="paso activo" id="paso1">
+    <span class="paso-label">Paso 1 de 5 · Identificación</span>
+    <h2>¿Quién registra y sobre qué sesión?</h2>
+
+    <div class="campo">
+      <label for="entrenador">Entrenador/a</label>
+      <input type="text" id="entrenador" value="Ariel" autocomplete="off" />
+    </div>
+
+    <div class="campo">
+      <label for="fecha">Fecha del evento</label>
+      <input type="date" id="fecha" />
+    </div>
+
+    <div class="campo">
+      <label for="jugadora">Jugadora</label>
+      <select id="jugadora">
+        <option value="" disabled selected>Seleccionar jugadora…</option>
+        <option>Fernández Bertachini, Juana</option>
+        <option>Ferreyra Sarapura, Josefina</option>
+        <option>Girardon, Lara</option>
+        <option>Linari, Guadalupe</option>
+        <option>Lopez Vicchi, Emma</option>
+        <option>Magallanes Gomez, Olivia</option>
+        <option>Mendez, Renata</option>
+        <option>Mirabella, Renata</option>
+        <option>Molina Bobbio, Felicitas</option>
+        <option>Molina Bobbio, Isabela</option>
+        <option>Nannizzi, Camila</option>
+        <option>Osti, Mercedes</option>
+        <option>Perez del Cerro, Lola</option>
+        <option>Rognoni, Felicitas</option>
+        <option>Santana, Guadalupe</option>
+        <option>Severino, Tais</option>
+        <option>Torres, Guadalupe Maria</option>
+        <option>Villegas Ali, Josefina</option>
+        <option>Vizzo, Bernarda</option>
+      </select>
+    </div>
+
+    <button class="btn-siguiente" onclick="irA(2)">Logros observados →</button>
+  </div>
+
+  <!-- PASO 2: Logros -->
+  <div class="paso" id="paso2">
+    <span class="paso-label">Paso 2 de 5 · Logros</span>
+    <h2>Seleccionar lo que corresponda</h2>
+    <p class="subtitulo">Puede ser una, varias o ninguna. Elegir lo más relevante.</p>
+
+    <div class="campo">
+      <label>Logros · Aspectos a destacar</label>
+      <div class="opciones" id="logros">
+        <div class="grupo-label">🏑 Técnico</div>
+        <label class="opcion"><input type="checkbox" value="Control y Recepción (Dominio)"><span class="opcion-texto">Control y Recepción <span style="color:#888;font-size:13px">· Dominio</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Distribución (Pases)"><span class="opcion-texto">Distribución <span style="color:#888;font-size:13px">· Pases</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Ataque y Dribbling (Desequilibrio)"><span class="opcion-texto">Ataque y Dribbling <span style="color:#888;font-size:13px">· Desequilibrio</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Quites y Defensa (Recuperación)"><span class="opcion-texto">Quites y Defensa <span style="color:#888;font-size:13px">· Recuperación</span></span></label>
+
+        <div class="grupo-label" style="margin-top:12px">🏃 Físico</div>
+        <label class="opcion"><input type="checkbox" value="Velocidad y Agilidad (Desplazamiento)"><span class="opcion-texto">Velocidad y Agilidad <span style="color:#888;font-size:13px">· Desplazamiento</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Potencia y Estabilidad (Fuerza/Equilibrio)"><span class="opcion-texto">Potencia y Estabilidad <span style="color:#888;font-size:13px">· Fuerza / Equilibrio</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Resistencia (Capacidad aeróbica)"><span class="opcion-texto">Resistencia <span style="color:#888;font-size:13px">· Capacidad aeróbica</span></span></label>
+
+        <div class="grupo-label" style="margin-top:12px">🧠 Actitudinal</div>
+        <label class="opcion"><input type="checkbox" value="Liderazgo y Comunicación (Influencia)"><span class="opcion-texto">Liderazgo y Comunicación <span style="color:#888;font-size:13px">· Influencia</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Resiliencia y Mejora (Aprendizaje)"><span class="opcion-texto">Resiliencia y Mejora <span style="color:#888;font-size:13px">· Aprendizaje</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Compromiso y Disciplina (Valores)"><span class="opcion-texto">Compromiso y Disciplina <span style="color:#888;font-size:13px">· Valores</span></span></label>
+      </div>
+    </div>
+
+    <button class="btn-siguiente" onclick="irA(3)">Desafíos observados →</button>
+  </div>
+
+  <!-- PASO 3: Desafíos -->
+  <div class="paso" id="paso3">
+    <span class="paso-label">Paso 3 de 5 · Desafíos</span>
+    <h2>Seleccionar solo si aplica</h2>
+    <p class="subtitulo">Puede ser una, varias o ninguna.</p>
+
+    <div class="campo">
+      <label>Desafíos · Aspectos a mejorar</label>
+      <div class="opciones" id="desafios">
+        <div class="grupo-label">🏑 Técnico</div>
+        <label class="opcion"><input type="checkbox" value="Control y Recepción (Dominio)"><span class="opcion-texto">Control y Recepción <span style="color:#888;font-size:13px">· Dominio</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Distribución (Pases)"><span class="opcion-texto">Distribución <span style="color:#888;font-size:13px">· Pases</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Ataque y Dribbling (Desequilibrio)"><span class="opcion-texto">Ataque y Dribbling <span style="color:#888;font-size:13px">· Desequilibrio</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Quites y Defensa (Recuperación)"><span class="opcion-texto">Quites y Defensa <span style="color:#888;font-size:13px">· Recuperación</span></span></label>
+
+        <div class="grupo-label" style="margin-top:12px">🏃 Físico</div>
+        <label class="opcion"><input type="checkbox" value="Velocidad y Agilidad (Desplazamiento)"><span class="opcion-texto">Velocidad y Agilidad <span style="color:#888;font-size:13px">· Desplazamiento</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Potencia y Estabilidad (Fuerza/Equilibrio)"><span class="opcion-texto">Potencia y Estabilidad <span style="color:#888;font-size:13px">· Fuerza / Equilibrio</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Resistencia (Capacidad aeróbica)"><span class="opcion-texto">Resistencia <span style="color:#888;font-size:13px">· Capacidad aeróbica</span></span></label>
+
+        <div class="grupo-label" style="margin-top:12px">🧠 Actitudinal</div>
+        <label class="opcion"><input type="checkbox" value="Liderazgo y Comunicación (Influencia)"><span class="opcion-texto">Liderazgo y Comunicación <span style="color:#888;font-size:13px">· Influencia</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Resiliencia y Mejora (Aprendizaje)"><span class="opcion-texto">Resiliencia y Mejora <span style="color:#888;font-size:13px">· Aprendizaje</span></span></label>
+        <label class="opcion"><input type="checkbox" value="Compromiso y Disciplina (Valores)"><span class="opcion-texto">Compromiso y Disciplina <span style="color:#888;font-size:13px">· Valores</span></span></label>
+      </div>
+    </div>
+
+    <button class="btn-siguiente" onclick="irA(4)">Continuar →</button>
+  </div>
+
+  <!-- PASO 4: Comentario -->
+  <div class="paso" id="paso4">
+    <span class="paso-label">Paso 4 de 5 · Comentario</span>
+    <h2>Algo más que quieras agregar</h2>
+    <p class="subtitulo">Opcional. Cualquier observación específica sobre la sesión o la jugadora.</p>
+
+    <div class="campo">
+      <textarea id="comentario" placeholder="Ej: Tuvo una gran actitud ante la corrección táctica, la vi más segura que la semana pasada…"></textarea>
+    </div>
+
+    <button class="btn-siguiente" onclick="enviar()">Registrar observación →</button>
+  </div>
+
+  <!-- PANTALLA ÉXITO -->
+  <div class="pantalla-exito" id="exito">
+    <div class="exito-icono">🏑</div>
+    <div class="exito-titulo" id="exito-titulo">¡Observación registrada!</div>
+    <p class="exito-subtitulo">Los datos ya están en el sistema del club y serán procesados para el próximo reporte.</p>
+    <p class="exito-firma">Tu mirada hace la diferencia.<br>Gracias por estos segundos para el crecimiento de las chicas.</p>
+    <button class="btn-reiniciar" onclick="reiniciar()">+ Cargar otra jugadora</button>
+  </div>
+
+  <div class="marca-footer"><strong>Miradas</strong> · Sistema de seguimiento formativo</div>
+</div>
+
+<script>
+  const pasos = [null, 'paso1','paso2','paso3','paso4'];
+  const progresoPct = [null, 20, 40, 60, 80, 100];
+  let pasoActual = 1;
+
+  // Fecha por defecto: hoy
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth()+1).padStart(2,'0');
+  const dd = String(hoy.getDate()).padStart(2,'0');
+  document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
+
+  // Estilo checkboxes al seleccionar
+  document.querySelectorAll('.opciones').forEach(contenedor => {
+    contenedor.addEventListener('change', e => {
+      if (e.target.type === 'checkbox') {
+        const label = e.target.closest('.opcion');
+        label.classList.toggle('seleccionada', e.target.checked);
+      }
+    });
+  });
+
+  function irA(n) {
+    if (n === 2) {
+      const jugadora = document.getElementById('jugadora').value;
+      if (!jugadora) {
+        document.getElementById('jugadora').focus();
+        document.getElementById('jugadora').style.borderColor = '#E24B4A';
+        setTimeout(() => document.getElementById('jugadora').style.borderColor = '', 1500);
+        return;
+      }
+    }
+    document.getElementById(pasos[pasoActual]).classList.remove('activo');
+    pasoActual = n;
+    document.getElementById(pasos[pasoActual]).classList.add('activo');
+    document.getElementById('progreso').style.width = progresoPct[n] + '%';
+    window.scrollTo(0, 0);
+  }
+
+  function getChecked(contenedorId) {
+    return Array.from(document.querySelectorAll(`#${contenedorId} input[type="checkbox"]:checked`))
+      .map(cb => cb.value);
+  }
+
+  function enviar() {
+    const jugadora = document.getElementById('jugadora').value;
+    const entrenador = document.getElementById('entrenador').value;
+    const fecha = document.getElementById('fecha').value;
+    const logros = getChecked('logros');
+    const desafios = getChecked('desafios');
+    const comentario = document.getElementById('comentario').value;
+
+    console.log('MIRADAS · Registro', { jugadora, entrenador, fecha, logros, desafios, comentario });
+
+    // Mostrar éxito
+    document.getElementById('paso4').classList.remove('activo');
+    document.getElementById('progreso').style.width = '100%';
+    document.getElementById('exito-titulo').textContent = `¡Observación de ${jugadora.split(',')[0]} registrada! 🏑`;
+    document.getElementById('exito').classList.add('activo');
+    window.scrollTo(0, 0);
+  }
+
+  function reiniciar() {
+    document.getElementById('exito').classList.remove('activo');
+    document.getElementById('jugadora').value = '';
+    document.getElementById('comentario').value = '';
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      cb.closest('.opcion').classList.remove('seleccionada');
+    });
+    pasoActual = 1;
+    document.getElementById('paso1').classList.add('activo');
+    document.getElementById('progreso').style.width = '20%';
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
