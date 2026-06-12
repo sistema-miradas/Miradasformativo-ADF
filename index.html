@@ -190,11 +190,7 @@
   }
 
   .opcion input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--verde);
-    flex-shrink: 0;
-    cursor: pointer;
+    display: none;
   }
 
   .opcion-texto {
@@ -518,6 +514,10 @@
       .map(cb => cb.value);
   }
 
+  // ↓ ÚNICO LUGAR QUE TENÉS QUE EDITAR
+  // Pegá acá la URL que te da Apps Script al publicar
+  const URL_SCRIPT = 'PEGAR_URL_APPS_SCRIPT_ACÁ';
+
   function enviar() {
     const jugadora = document.getElementById('jugadora').value;
     const entrenador = document.getElementById('entrenador').value;
@@ -525,14 +525,12 @@
     const logros = getChecked('logros');
     const desafios = getChecked('desafios');
     const comentario = document.getElementById('comentario').value;
-    const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycby2K1daHli4NhJl_4hGN750RwlIz8o_mObl8eDDZK00w4Pzj7aHCYY9ckQ-Na8eNtP5/exec';
 
-fetch(URL_SCRIPT, {
-  method: 'POST',
-  mode: 'no-cors',
-  body: JSON.stringify({ entrenador, fecha, jugadora, logros, desafios, comentario })
-});
-    console.log('MIRADAS · Registro', { jugadora, entrenador, fecha, logros, desafios, comentario });
+    // Envío a Google Sheets
+    fetch(URL_SCRIPT, {
+      method: 'POST',
+      body: JSON.stringify({ entrenador, fecha, jugadora, logros, desafios, comentario })
+    }).catch(() => {}); // silencia error de red sin bloquear el formulario
 
     // Mostrar éxito
     document.getElementById('paso4').classList.remove('activo');
