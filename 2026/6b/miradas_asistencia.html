@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Miradas · Asistencia 6°B</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --verde: #1D9E75;
+    --verde-claro: #E1F5EE;
+    --verde-oscuro: #0F6E56;
+    --gris-texto: #2C2C2A;
+    --gris-suave: #F1EFE8;
+    --gris-borde: rgba(0,0,0,0.12);
+    --radio: 12px;
+    --radio-sm: 8px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f7f7f5;
+    color: var(--gris-texto);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+  }
+
+  .shell {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--verde);
+    padding: 28px 24px 24px;
+    color: #fff;
+  }
+
+  .header-marca {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 6px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .header p {
+    font-size: 13px;
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.25);
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #fff;
+    transition: width 0.35s ease;
+  }
+
+  /* PASOS */
+  .paso {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    padding: 28px 24px 24px;
+    gap: 20px;
+  }
+
+  .paso.activo {
+    display: flex;
+  }
+
+  .paso-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--verde);
+  }
+
+  .paso h2 {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--gris-texto);
+  }
+
+  .paso .subtitulo {
+    font-size: 14px;
+    color: #5F5E5A;
+    margin-top: -12px;
+    line-height: 1.5;
+  }
+
+  /* CAMPOS */
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .campo label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #444441;
+  }
+
+  .campo input,
+  .campo select,
+  .campo textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--gris-texto);
+    background: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .campo input:focus,
+  .campo select:focus,
+  .campo textarea:focus {
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+  }
+
+  .campo textarea {
+    resize: none;
+    min-height: 100px;
+    line-height: 1.6;
+  }
+
+  /* TIPO DE SESIÓN */
+  .tipo-opciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .tipo-btn {
+    padding: 14px 10px;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    background: #fff;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--gris-texto);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tipo-btn .tipo-icono {
+    font-size: 22px;
+  }
+
+  .tipo-btn .tipo-texto {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .tipo-btn .tipo-sub {
+    font-size: 11px;
+    color: #888780;
+  }
+
+  .tipo-btn:active {
+    transform: scale(0.97);
+  }
+
+  .tipo-btn.seleccionado {
+    border-color: var(--verde);
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+  }
+
+  .tipo-btn.seleccionado .tipo-sub {
+    color: var(--verde);
+  }
+
+  /* LISTA DE AUSENTES */
+  .jugadoras-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .jugadora-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-sm);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .jugadora-item:active {
+    transform: scale(0.98);
+  }
+
+  .jugadora-check {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    background: #fff;
+  }
+
+  .jugadora-nombre {
+    font-size: 15px;
+    color: var(--gris-texto);
+    flex: 1;
+  }
+
+  .jugadora-item.ausente {
+    border-color: #E05A5A;
+    background: #FEF0F0;
+  }
+
+  .jugadora-item.ausente .jugadora-check {
+    background: #E05A5A;
+    border-color: #E05A5A;
+  }
+
+  .jugadora-item.ausente .jugadora-nombre {
+    color: #8B2020;
+    font-weight: 500;
+  }
+
+  .jugadora-check-icon {
+    color: #fff;
+    font-size: 12px;
+    display: none;
+  }
+
+  .jugadora-item.ausente .jugadora-check-icon {
+    display: block;
+  }
+
+  /* CONTADOR */
+  .contador-ausentes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--gris-suave);
+    border-radius: var(--radio-sm);
+    font-size: 13px;
+    color: #5F5E5A;
+  }
+
+  .contador-ausentes strong {
+    color: #E05A5A;
+  }
+
+  .contador-ausentes.con-ausentes {
+    background: #FEF0F0;
+  }
+
+  /* BOTÓN PRINCIPAL */
+  .btn-siguiente {
+    margin-top: auto;
+    padding: 15px 24px;
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    border-radius: var(--radio);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-siguiente:active {
+    background: var(--verde-oscuro);
+    transform: scale(0.98);
+  }
+
+  /* PANTALLA FINAL */
+  .pantalla-exito {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 40px 28px;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .pantalla-exito.activo {
+    display: flex;
+  }
+
+  .exito-icono {
+    width: 72px;
+    height: 72px;
+    background: var(--verde-claro);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  .exito-titulo {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--verde-oscuro);
+    line-height: 1.3;
+  }
+
+  .exito-resumen {
+    width: 100%;
+    background: #FEF0F0;
+    border-radius: var(--radio-sm);
+    padding: 14px 16px;
+    text-align: left;
+    display: none;
+  }
+
+  .exito-resumen.visible {
+    display: block;
+  }
+
+  .exito-resumen-titulo {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #E05A5A;
+    margin-bottom: 8px;
+  }
+
+  .exito-resumen-lista {
+    font-size: 14px;
+    color: #8B2020;
+    line-height: 1.8;
+  }
+
+  .exito-subtitulo {
+    font-size: 15px;
+    color: #5F5E5A;
+    line-height: 1.6;
+    max-width: 300px;
+  }
+
+  .exito-firma {
+    font-size: 13px;
+    color: #888780;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .btn-reiniciar {
+    margin-top: 24px;
+    padding: 15px 24px;
+    background: #fff;
+    color: var(--verde-oscuro);
+    border: 1.5px solid var(--verde);
+    border-radius: var(--radio);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s;
+  }
+
+  .btn-reiniciar:active {
+    background: var(--verde-claro);
+  }
+
+  /* MARCA FOOTER */
+  .marca-footer {
+    text-align: center;
+    padding: 12px;
+    font-size: 11px;
+    color: #B4B2A9;
+    letter-spacing: 0.05em;
+    border-top: 1px solid var(--gris-borde);
+  }
+
+  .marca-footer strong {
+    color: var(--verde);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="header">
+    <div class="header-marca">Miradas · Sistema de seguimiento</div>
+    <h1>ADF Hockey 6°B</h1>
+    <p>Registro de asistencia · Entrenamiento o partido</p>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progreso" style="width: 33%"></div>
+  </div>
+
+  <!-- PASO 1: Datos básicos -->
+  <div class="paso activo" id="paso1">
+    <span class="paso-label">Paso 1 de 3 · Identificación</span>
+    <h2>¿Quién registra y qué sesión fue?</h2>
+
+    <div class="campo">
+      <label for="entrenador">Entrenador/a</label>
+      <input type="text" id="entrenador" value="Ariel" autocomplete="off" />
+    </div>
+
+    <div class="campo">
+      <label for="fecha">Fecha del evento</label>
+      <input type="date" id="fecha" />
+    </div>
+
+    <div class="campo">
+      <label>Tipo de sesión <span style="color:#888780;font-weight:400">(opcional)</span></label>
+      <div class="tipo-opciones">
+        <button class="tipo-btn" id="btn-entrenamiento" onclick="seleccionarTipo('entrenamiento')">
+          <span class="tipo-icono">🏑</span>
+          <span class="tipo-texto">Entrenamiento</span>
+        </button>
+        <button class="tipo-btn" id="btn-partido" onclick="seleccionarTipo('partido')">
+          <span class="tipo-icono">🏆</span>
+          <span class="tipo-texto">Partido</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-siguiente" onclick="irA(2)">¿Quién faltó? →</button>
+  </div>
+
+  <!-- PASO 2: Ausentes -->
+  <div class="paso" id="paso2">
+    <span class="paso-label">Paso 2 de 3 · Ausentes</span>
+    <h2>¿Quién estuvo ausente?</h2>
+    <p class="subtitulo">Tocá para marcar. Si todas vinieron, pasá directo.</p>
+
+    <div class="contador-ausentes" id="contador">
+      <span>Sin ausentes registradas</span>
+    </div>
+
+    <div class="campo">
+      <div class="jugadoras-lista" id="jugadoras-lista">
+        <!-- generado por JS -->
+      </div>
+    </div>
+
+    <button class="btn-siguiente" onclick="irA(3)">Agregar comentario →</button>
+  </div>
+
+  <!-- PASO 3: Comentario -->
+  <div class="paso" id="paso3">
+    <span class="paso-label">Paso 3 de 3 · Comentario</span>
+    <h2>Algo más que quieras aclarar</h2>
+    <p class="subtitulo">Opcional. Ej: "Renata lesionada, Lola viaje de colegio."</p>
+
+    <div class="campo">
+      <textarea id="comentario" placeholder="Motivos, aclaraciones o cualquier contexto útil…"></textarea>
+    </div>
+
+    <button class="btn-siguiente" onclick="enviar()">Registrar asistencia →</button>
+  </div>
+
+  <!-- PANTALLA ÉXITO -->
+  <div class="pantalla-exito" id="exito">
+    <div class="exito-icono">✅</div>
+    <div class="exito-titulo">¡Asistencia registrada!</div>
+
+    <div class="exito-resumen" id="exito-resumen">
+      <div class="exito-resumen-titulo">Ausentes registradas</div>
+      <div class="exito-resumen-lista" id="exito-resumen-lista"></div>
+    </div>
+
+    <p class="exito-subtitulo">Los datos ya están en el sistema del club y serán procesados para el próximo reporte.</p>
+    <p class="exito-firma">Tu mirada hace la diferencia.<br>Gracias por estos segundos para el crecimiento de las chicas.</p>
+    <button class="btn-reiniciar" onclick="reiniciar()">+ Cargar nueva sesión</button>
+  </div>
+
+  <div class="marca-footer"><strong>Miradas</strong> · Sistema de seguimiento formativo</div>
+</div>
+
+<script>
+  const JUGADORAS = [
+    'Fernández Bertachini, Juana',
+    'Ferreyra Sarapura, Josefina',
+    'Girardon, Lara',
+    'Linari, Guadalupe',
+    'Lopez Vicchi, Emma',
+    'Magallanes Gomez, Olivia',
+    'Mendez, Renata',
+    'Mirabella, Renata',
+    'Molina Bobbio, Felicitas',
+    'Molina Bobbio, Isabela',
+    'Nannizzi, Camila',
+    'Osti, Mercedes',
+    'Perez del Cerro, Lola',
+    'Rognoni, Felicitas',
+    'Santana, Guadalupe',
+    'Severino, Tais',
+    'Torres, Guadalupe Maria',
+    'Villegas Ali, Josefina',
+    'Vizzo, Bernarda',
+  ];
+
+  // ↓ Pegá acá la URL de tu Apps Script
+  const URL_SCRIPT = 'PEGAR_URL_APPS_SCRIPT_ACÁ';
+
+  let tipoSesion = '';
+  let ausentes = new Set();
+
+  // Fecha por defecto: hoy
+  const hoy = new Date();
+  document.getElementById('fecha').value =
+    `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+
+  // Generar lista de jugadoras
+  const lista = document.getElementById('jugadoras-lista');
+  JUGADORAS.forEach(nombre => {
+    const item = document.createElement('div');
+    item.className = 'jugadora-item';
+    item.dataset.nombre = nombre;
+    item.innerHTML = `
+      <div class="jugadora-check"><span class="jugadora-check-icon">✕</span></div>
+      <span class="jugadora-nombre">${nombre}</span>
+    `;
+    item.addEventListener('click', () => toggleAusente(nombre, item));
+    lista.appendChild(item);
+  });
+
+  function toggleAusente(nombre, el) {
+    if (ausentes.has(nombre)) {
+      ausentes.delete(nombre);
+      el.classList.remove('ausente');
+    } else {
+      ausentes.add(nombre);
+      el.classList.add('ausente');
+    }
+    actualizarContador();
+  }
+
+  function actualizarContador() {
+    const cont = document.getElementById('contador');
+    const n = ausentes.size;
+    if (n === 0) {
+      cont.innerHTML = '<span>Sin ausentes registradas</span>';
+      cont.classList.remove('con-ausentes');
+    } else {
+      cont.innerHTML = `<strong>${n} ausente${n > 1 ? 's' : ''}</strong><span>marcada${n > 1 ? 's' : ''}</span>`;
+      cont.classList.add('con-ausentes');
+    }
+  }
+
+  function seleccionarTipo(tipo) {
+    tipoSesion = tipo;
+    document.getElementById('btn-entrenamiento').classList.toggle('seleccionado', tipo === 'entrenamiento');
+    document.getElementById('btn-partido').classList.toggle('seleccionado', tipo === 'partido');
+  }
+
+  const pasos = [null, 'paso1', 'paso2', 'paso3'];
+  const progresoPct = [null, 33, 66, 100];
+  let pasoActual = 1;
+
+  function irA(n) {
+    document.getElementById(pasos[pasoActual]).classList.remove('activo');
+    pasoActual = n;
+    document.getElementById(pasos[pasoActual]).classList.add('activo');
+    document.getElementById('progreso').style.width = progresoPct[n] + '%';
+    window.scrollTo(0, 0);
+  }
+
+  function enviar() {
+    const entrenador = document.getElementById('entrenador').value;
+    const fecha = document.getElementById('fecha').value;
+    const comentario = document.getElementById('comentario').value;
+    const ausentesArr = Array.from(ausentes);
+
+    // Envío a Google Sheets
+    fetch(URL_SCRIPT, {
+      method: 'POST',
+      body: JSON.stringify({
+        tipo: 'asistencia',
+        entrenador,
+        fecha,
+        tipoSesion,
+        ausentes: ausentesArr,
+        comentario
+      })
+    }).catch(() => {});
+
+    // Mostrar pantalla éxito
+    document.getElementById('paso3').classList.remove('activo');
+    document.getElementById('progreso').style.width = '100%';
+
+    const resumenEl = document.getElementById('exito-resumen');
+    const listaEl = document.getElementById('exito-resumen-lista');
+    if (ausentesArr.length > 0) {
+      listaEl.innerHTML = ausentesArr.map(n => `• ${n}`).join('<br>');
+      resumenEl.classList.add('visible');
+    } else {
+      resumenEl.classList.remove('visible');
+    }
+
+    document.getElementById('exito').classList.add('activo');
+    window.scrollTo(0, 0);
+  }
+
+  function reiniciar() {
+    document.getElementById('exito').classList.remove('activo');
+    document.getElementById('comentario').value = '';
+    tipoSesion = '';
+    ausentes.clear();
+    document.getElementById('btn-entrenamiento').classList.remove('seleccionado');
+    document.getElementById('btn-partido').classList.remove('seleccionado');
+    document.querySelectorAll('.jugadora-item').forEach(el => el.classList.remove('ausente'));
+    actualizarContador();
+    pasoActual = 1;
+    document.getElementById('paso1').classList.add('activo');
+    document.getElementById('progreso').style.width = '33%';
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
