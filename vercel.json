@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/2026/6b/observaciones", "destination": "/2026/6b/miradas_formativo_-formulario.html" },
-    { "source": "/2026/6b/asistencia",    "destination": "/2026/6b/miradas_asistencia.html" }
+    { "source": "/2026/6b/observaciones", "destination": "/2026/6b/ADF2026-6b-observaciones.html" },
+    { "source": "/2026/6b/asistencia",    "destination": "/2026/6b/ADF2026-6b-asistencia.html" }
   ]
 }
